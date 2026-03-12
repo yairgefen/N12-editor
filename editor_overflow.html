@@ -991,7 +991,7 @@
         const strictNote = attempt > 1
           ? `חשוב מאוד: הניסיון הקודם החזיר טקסט ארוך מדי. חובה שהתוצאה תהיה ${maxChars} תווים לכל היותר — ספור בעצמך לפני שאתה מחזיר.`
           : '';
-        const response = await fetch('http://localhost:3131/v1/messages', {
+        const response = await fetch('https://n12-proxy.YOUR-USERNAME.workers.dev', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
