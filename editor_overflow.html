@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>מגבלת התווים של N12 — גרסת overflow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #fff;
+      font-family: 'Heebo', sans-serif;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 28px 20px 48px;
+    }
+
+    h1 {
+      color: #c0001a;
+      font-size: clamp(20px, 4vw, 28px);
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      color: #c0001a;
+      font-size: 16px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    /* ---- layout ---- */
+    .outer {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    /* טבלאות - שני שלישים */
+    .tables-col {
+      flex: 2;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+
+    .toolbar {
+      display: flex;
+      gap: 6px;
+      padding: 8px 12px;
+      border-bottom: 1.5px solid #eee;
+      background: #fafafa;
+      flex-shrink: 0;
+    }
+
+    .toolbar-btn {
+      width: 32px;
+      height: 32px;
+      border: 1.5px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      font-family: Georgia, serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .toolbar-btn:hover { background: #f0f0f0; border-color: #bbb; }
+    .toolbar-btn.active { background: #c0001a; color: #fff; border-color: #c0001a; }
+
+    .vertical-editor {
+      flex: 1;
+      width: 100%;
+      border: none;
+      outline: none;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 14px;
+      direction: rtl;
+      color: #1a1a1a;
+      background: #fff;
+      overflow-y: auto;
+      min-height: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .vertical-editor:empty:before {
+      content: attr(data-placeholder);
+      color: #aaa;
+      pointer-events: none;
+    }
+
+    /* חלון ורטיקלי - שליש */
+    .vertical-panel {
+      margin-top: 34px; /* מיישר עם תחילת הבוקס של פוש */
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-self: stretch;
+    }
+
+    .vertical-box {
+      background: #fff;
+      border: 1.5px solid #ddd;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .vertical-box-header {
+      background: #f7f7f7;
+      border-bottom: 1.5px solid #ddd;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .vertical-box-header span {
+      font-size: 13px;
+      font-weight: 700;
+      color: #c0001a;
+    }
+
+    .vertical-textarea {
+      flex: 1;
+      width: 100%;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 14px;
+      direction: rtl;
+      color: #1a1a1a;
+      background: #fff;
+      min-height: 0;
+    }
+
+    .vertical-footer {
+      border-top: 1.5px solid #eee;
+      padding: 10px 14px;
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ---- box ---- */
+    .box {
+      background: #fff;
+      border: 1.5px solid #ddd;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .field-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .field-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #444;
+    }
+
+    .counter {
+      font-size: 12px;
+      font-weight: 700;
+      direction: ltr;
+      color: #4ecf8e;
+      transition: color 0.2s;
+    }
+
+    textarea {
+      width: 100%;
+      background: #f7f7f7;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      color: #1a1a1a;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      line-height: 1.55;
+      padding: 8px 12px;
+      outline: none;
+      direction: rtl;
+      resize: none;
+      overflow: hidden;
+      transition: border-color 0.2s, background 0.15s;
+    }
+
+    textarea:focus  { border-color: #c0001a; background: #fff; }
+    textarea.warn   { border-color: #f0a500 !important; }
+    textarea.danger { border-color: #e00    !important; }
+
+    /* highlight wrapper */
+    .ta-wrap {
+      position: relative;
+    }
+
+    .ta-highlight {
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      line-height: 1.55;
+      direction: rtl;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow: hidden;
+      pointer-events: none;
+      color: #1a1a1a;
+    }
+
+    .ta-highlight .over {
+      color: #e00;
+      background: rgba(220,0,0,0.08);
+      border-radius: 2px;
+    }
+
+    .ta-wrap textarea {
+      position: relative;
+      background: transparent;
+      caret-color: #1a1a1a;
+      color: #1a1a1a;
+    }
+
+    .ta-wrap textarea.has-overflow {
+      color: transparent;
+      caret-color: #1a1a1a;
+    }
+
+    .prog { height: 3px; background: #eee; border-radius: 99px; overflow: hidden; }
+    .prog-fill {
+      height: 100%; border-radius: 99px;
+      background: #4ecf8e;
+      transition: width 0.2s, background 0.3s;
+      width: 0%;
+    }
+
+    hr { border: none; border-top: 1px solid #eee; }
+
+    .actions { display: flex; gap: 10px; }
+
+    .copy-btn, .clear-btn {
+      flex: 1;
+      padding: 9px 0;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.15s;
+    }
+
+    .copy-btn { background: #c0001a; color: #fff; }
+    .copy-btn:hover  { background: #a00015; transform: translateY(-1px); }
+    .copy-btn.copied { background: #2a9c5f; }
+
+    .clear-btn { background: #f2f2f2; color: #555; flex: 0 0 76px; }
+    .clear-btn:hover { background: #e0e0e0; transform: translateY(-1px); }
+
+    .shorten-btn { background: #fff8e1; color: #b06000; border: 1.5px solid #f0c040; flex: 0 0 76px; border-radius: 8px; }
+    .shorten-btn:hover { background: #fff0b0; transform: translateY(-1px); }
+    .shorten-btn:disabled { opacity: 0.45; cursor: default; transform: none; }
+    .shorten-btn.loading { background: #fff8e1; color: #b06000; }
+
+    .undo-btn {
+      font-family: 'Heebo', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      cursor: pointer;
+      border-radius: 6px;
+      border: 1.5px solid #ccc;
+      background: #f2f2f2;
+      color: #555;
+      transition: all 0.18s;
+      display: none;
+    }
+    .undo-btn:hover { background: #e0e0e0; }
+    .undo-btn.visible { display: inline-block; }
+
+    .original-box {
+      display: none;
+      margin-top: 8px;
+      background: #fffbf0;
+      border: 1.5px dashed #f0c040;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #666;
+      direction: rtl;
+      line-height: 1.5;
+    }
+    .original-box.visible { display: block; }
+    .original-box-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #b06000;
+      margin-bottom: 4px;
+    }
+    .original-box-text {
+      color: #444;
+      font-size: 13px;
+    }
+
+    .bottom-grid {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- To Do List ---- */
+    .todo-panel {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .todo-box {
+      background: #fff;
+      border: 1.5px solid #ddd;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .todo-header {
+      background: #c0001a;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      padding: 12px 16px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .todo-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: default;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+
+    .todo-item.dragging {
+      opacity: 0.4;
+    }
+
+    .todo-item.drag-over {
+      background: #fff0f0;
+      outline: 1.5px dashed #c0001a;
+    }
+
+    .drag-handle {
+      color: #ccc;
+      cursor: grab;
+      font-size: 14px;
+      flex-shrink: 0;
+      user-select: none;
+      padding: 0 2px;
+    }
+    .drag-handle:active { cursor: grabbing; }
+
+    .todo-divider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0;
+      flex-shrink: 0;
+      cursor: default;
+    }
+
+    .todo-divider-line {
+      flex: 1;
+      height: 1.5px;
+      background: #e0e0e0;
+    }
+
+    .todo-divider-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      background: #c0001a;
+      white-space: nowrap;
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+
+    .todo-check {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      accent-color: #c0001a;
+      cursor: pointer;
+    }
+
+    .todo-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      color: #1a1a1a;
+      direction: rtl;
+      background: transparent;
+      padding: 4px 0;
+      border-bottom: 1px solid #eee;
+      transition: border-color 0.2s;
+    }
+
+    .todo-input:focus { border-color: #c0001a; }
+
+    .todo-input.done {
+      text-decoration: line-through;
+      color: #aaa;
+    }
+
+    .todo-delete {
+      width: 20px;
+      height: 20px;
+      border: none;
+      background: none;
+      color: #ddd;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 0;
+      line-height: 1;
+      flex-shrink: 0;
+      transition: color 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .todo-delete:hover { color: #c0001a; }
+
+    .todo-footer {
+      padding: 10px 12px;
+      border-top: 1px solid #eee;
+      flex-shrink: 0;
+    }
+
+    .todo-add-btn {
+      width: 100%;
+      padding: 8px 0;
+      background: #f7f7f7;
+      border: 1.5px dashed #ddd;
+      border-radius: 8px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 13px;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .todo-add-btn:hover { background: #fff0f0; border-color: #c0001a; color: #c0001a; }
+
+
+    /* ---- API Key Modal ---- */
+    .api-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .api-modal-overlay.visible { display: flex; }
+    .api-modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 32px;
+      width: 420px;
+      max-width: 90vw;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+      direction: rtl;
+      font-family: 'Heebo', sans-serif;
+    }
+    .api-modal h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: #c0001a;
+    }
+    .api-modal p {
+      margin: 0 0 16px;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+    }
+    .api-modal input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: monospace;
+      direction: ltr;
+      margin-bottom: 14px;
+      outline: none;
+    }
+    .api-modal input:focus { border-color: #c0001a; }
+    .api-modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+    .api-modal-save {
+      background: #c0001a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 22px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .api-modal-save:hover { background: #a00015; }
+    .api-modal-cancel {
+      background: #f2f2f2;
+      color: #555;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .api-key-indicator {
+      position: fixed;
+      bottom: 14px;
+      left: 14px;
+      font-size: 11px;
+      font-family: 'Heebo', sans-serif;
+      color: #aaa;
+      cursor: pointer;
+      z-index: 100;
+    }
+    .api-key-indicator:hover { color: #c0001a; }
+
+  </style>
+  <link rel="icon" type="image/png" href="https://rcs.mako.co.il/images/favicon/N12/apple-touch-icon.png"/>
+</head>
+<body>
+
+<img src="data:image/png;base64,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" alt="N12" style="display:block;margin:0 auto 20px;max-width:320px;width:100%;">
+<h1>מגבלת התווים של N12</h1>
+
+<div class="outer">
+
+  <!-- חלון ורטיקלי 9:16 מימין - שליש -->
+  <div class="vertical-panel">
+    <div class="vertical-box">
+      <div class="toolbar">
+        <button class="toolbar-btn" id="tb-bold" onclick="formatText('bold')" title="Bold"><b>B</b></button>
+        <button class="toolbar-btn" id="tb-underline" onclick="formatText('underline')" title="Underline"><u>U</u></button>
+        <button class="toolbar-btn" id="tb-strike" onclick="formatText('strikeThrough')" title="Strikethrough"><s>S</s></button>
+      </div>
+      <div class="vertical-editor" id="field-vertical" contenteditable="true" data-placeholder="כתוב כאן..."></div>
+      <div class="vertical-footer">
+        <button class="clear-btn" onclick="document.getElementById('field-vertical').innerHTML=''" style="flex:1;border-radius:6px;">מחק</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- טבלאות - שני שלישים משמאל -->
+  <div class="tables-col">
+
+    <!-- פוש -->
+    <div>
+      <div class="section-title">פוש</div>
+      <div class="box">
+        <div class="field-wrap">
+          <div class="field-top">
+            <span class="field-name">פוש — עד 100 תווים</span>
+            <span class="counter" id="cnt-push">0/100</span>
+          </div>
+          <div class="ta-wrap"><div class="ta-highlight" id="hl-field-push"></div><textarea id="field-push" rows="3" placeholder="הקלד טקסט פוש..."></textarea></div>
+          <div class="prog"><div class="prog-fill" id="bar-push"></div></div>
+        <div style="margin-top:4px;display:flex;gap:6px;align-items:center;"><button class="shorten-btn" id="shorten-field-push" onclick="shortenField('field-push',100)" style="font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;padding:4px 12px;cursor:pointer;border-radius:6px;transition:all 0.18s;">✦ קצר</button><button class="undo-btn" id="undo-field-push" onclick="undoShorten('field-push')">↩ בטל</button></div><div class="original-box" id="orig-field-push"><div class="original-box-label">נוסח מקורי לפני קיצור:</div><div class="original-box-text" id="orig-text-field-push"></div></div>
+        </div>
+        <hr/>
+        <div class="actions">
+          <button class="copy-btn" id="btn-push" onclick="copyPush()">העתק</button>
+          <button class="clear-btn" onclick="clearField('field-push','cnt-push','bar-push',100)">מחק</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- גריד תחתון -->
+    <div class="bottom-grid">
+
+      <!-- הומפייג' -->
+      <div class="col">
+        <div class="section-title">הומפייג'</div>
+        <div class="box">
+          <div class="field-wrap">
+            <div class="field-top">
+              <span class="field-name">כותרת — עד 55 תווים</span>
+              <span class="counter" id="cnt-title">0/55</span>
+            </div>
+            <div class="ta-wrap"><div class="ta-highlight" id="hl-field-title"></div><textarea id="field-title" rows="2" placeholder="הקלד כותרת..."></textarea></div>
+            <div class="prog"><div class="prog-fill" id="bar-title"></div></div>
+        <div style="margin-top:4px;display:flex;gap:6px;align-items:center;"><button class="shorten-btn" id="shorten-field-title" onclick="shortenField('field-title',55)" style="font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;padding:4px 12px;cursor:pointer;border-radius:6px;transition:all 0.18s;">✦ קצר</button><button class="undo-btn" id="undo-field-title" onclick="undoShorten('field-title')">↩ בטל</button></div><div class="original-box" id="orig-field-title"><div class="original-box-label">נוסח מקורי לפני קיצור:</div><div class="original-box-text" id="orig-text-field-title"></div></div>
+          </div>
+          <div class="field-wrap">
+            <div class="field-top">
+              <span class="field-name">משנה — עד 75 תווים</span>
+              <span class="counter" id="cnt-sub">0/75</span>
+            </div>
+            <div class="ta-wrap"><div class="ta-highlight" id="hl-field-sub"></div><textarea id="field-sub" rows="3" placeholder="הקלד משנה..."></textarea></div>
+            <div class="prog"><div class="prog-fill" id="bar-sub"></div></div>
+        <div style="margin-top:4px;display:flex;gap:6px;align-items:center;"><button class="shorten-btn" id="shorten-field-sub" onclick="shortenField('field-sub',75)" style="font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;padding:4px 12px;cursor:pointer;border-radius:6px;transition:all 0.18s;">✦ קצר</button><button class="undo-btn" id="undo-field-sub" onclick="undoShorten('field-sub')">↩ בטל</button></div><div class="original-box" id="orig-field-sub"><div class="original-box-label">נוסח מקורי לפני קיצור:</div><div class="original-box-text" id="orig-text-field-sub"></div></div>
+          </div>
+          <hr/>
+          <div class="actions">
+            <button class="copy-btn" id="btn-main" onclick="copyMain()">העתק כותרת + משנה</button>
+            <button class="clear-btn" onclick="clearGroup(['field-title','field-sub'],['cnt-title','cnt-sub'],['bar-title','bar-sub'],[55,75])">מחק</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- אייטם בפנים -->
+      <div class="col">
+        <div class="section-title">אייטם בפנים</div>
+        <div class="box">
+          <div class="field-wrap">
+            <div class="field-top">
+              <span class="field-name">כותרת — עד 200 תווים</span>
+              <span class="counter" id="cnt-hp-title">0/200</span>
+            </div>
+            <div class="ta-wrap"><div class="ta-highlight" id="hl-field-hp-title"></div><textarea id="field-hp-title" rows="4" placeholder="הקלד כותרת..."></textarea></div>
+            <div class="prog"><div class="prog-fill" id="bar-hp-title"></div></div>
+        <div style="margin-top:4px;display:flex;gap:6px;align-items:center;"><button class="shorten-btn" id="shorten-field-hp-title" onclick="shortenField('field-hp-title',200)" style="font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;padding:4px 12px;cursor:pointer;border-radius:6px;transition:all 0.18s;">✦ קצר</button><button class="undo-btn" id="undo-field-hp-title" onclick="undoShorten('field-hp-title')">↩ בטל</button></div><div class="original-box" id="orig-field-hp-title"><div class="original-box-label">נוסח מקורי לפני קיצור:</div><div class="original-box-text" id="orig-text-field-hp-title"></div></div>
+          </div>
+          <div class="field-wrap">
+            <div class="field-top">
+              <span class="field-name">משנה — עד 360 תווים</span>
+              <span class="counter" id="cnt-hp-sub">0/360</span>
+            </div>
+            <div class="ta-wrap"><div class="ta-highlight" id="hl-field-hp-sub"></div><textarea id="field-hp-sub" rows="6" placeholder="הקלד משנה..."></textarea></div>
+            <div class="prog"><div class="prog-fill" id="bar-hp-sub"></div></div>
+        <div style="margin-top:4px;display:flex;gap:6px;align-items:center;"><button class="shorten-btn" id="shorten-field-hp-sub" onclick="shortenField('field-hp-sub',360)" style="font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;padding:4px 12px;cursor:pointer;border-radius:6px;transition:all 0.18s;">✦ קצר</button><button class="undo-btn" id="undo-field-hp-sub" onclick="undoShorten('field-hp-sub')">↩ בטל</button></div><div class="original-box" id="orig-field-hp-sub"><div class="original-box-label">נוסח מקורי לפני קיצור:</div><div class="original-box-text" id="orig-text-field-hp-sub"></div></div>
+          </div>
+          <hr/>
+          <div class="actions">
+            <button class="copy-btn" id="btn-hp" onclick="copyHomepage()">העתק כותרת + משנה</button>
+            <button class="clear-btn" onclick="clearGroup(['field-hp-title','field-hp-sub'],['cnt-hp-title','cnt-hp-sub'],['bar-hp-title','bar-hp-sub'],[200,360])">מחק</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- To Do List -->
+  <div class="todo-panel" style="margin-top:34px; align-self: stretch;">
+    <div class="todo-box">
+      <div class="todo-header">To Do List</div>
+      <div class="todo-list" id="todo-list-pending" style="flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:6px;"></div>
+      <div class="todo-divider" style="padding:0 12px;flex-shrink:0;">
+        <div class="todo-divider-line"></div>
+        <span class="todo-divider-label">בוצע</span>
+        <div class="todo-divider-line"></div>
+      </div>
+      <div class="todo-list" id="todo-list-done" style="flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:6px;"></div>
+      <div class="todo-footer">
+        <button class="todo-add-btn" onclick="addTodo()">+ הוסף שורה</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+  // ----- auto resize -----
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+
+  // ----- bind all textareas -----
+  const ALL = [
+    { taId: 'field-push',     cntId: 'cnt-push',     barId: 'bar-push',     max: 100 },
+    { taId: 'field-title',    cntId: 'cnt-title',    barId: 'bar-title',    max: 55  },
+    { taId: 'field-sub',      cntId: 'cnt-sub',      barId: 'bar-sub',      max: 75  },
+    { taId: 'field-hp-title', cntId: 'cnt-hp-title', barId: 'bar-hp-title', max: 200 },
+    { taId: 'field-hp-sub',   cntId: 'cnt-hp-sub',   barId: 'bar-hp-sub',   max: 360 },
+  ];
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\n/g, '\n');
+  }
+
+  function updateHighlight(ta, hl, max) {
+    const val = ta.value;
+    if (val.length > max) {
+      const ok  = escapeHtml(val.slice(0, max));
+      const bad = escapeHtml(val.slice(max));
+      hl.innerHTML = ok + '<span class="over">' + bad + '</span>';
+      ta.classList.add('has-overflow');
+    } else {
+      hl.innerHTML = '';
+      ta.classList.remove('has-overflow');
+    }
+    // sync highlight scroll
+    hl.scrollTop = ta.scrollTop;
+  }
+
+  ALL.forEach(f => {
+    const ta  = document.getElementById(f.taId);
+    const cnt = document.getElementById(f.cntId);
+    const bar = document.getElementById(f.barId);
+    const hl  = document.getElementById('hl-' + f.taId);
+
+    ta.addEventListener('input', () => {
+      autoResize(ta);
+      const len = ta.value.length;
+      const pct = len / f.max * 100;
+      cnt.textContent = `${len}/${f.max}`;
+      let color = '#4ecf8e';
+      if (pct >= 100) color = '#e00';
+      else if (pct >= 80) color = '#f0a500';
+      bar.style.width = Math.min(pct, 100) + '%';
+      bar.style.background = color;
+      cnt.style.color = color;
+      ta.classList.remove('warn','danger');
+      if (pct >= 100) ta.classList.add('danger');
+      else if (pct >= 80) ta.classList.add('warn');
+      updateHighlight(ta, hl, f.max);
+    });
+  });
+
+  // ----- flash copied -----
+  function flashCopied(btn, orig) {
+    btn.textContent = '✓ הועתק!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  }
+
+  // ----- copy functions -----
+  function copyPush() {
+    const text = document.getElementById('field-push').value;
+    navigator.clipboard.writeText(text).then(() =>
+      flashCopied(document.getElementById('btn-push'), 'העתק'));
+  }
+
+  function copyMain() {
+    const t = document.getElementById('field-title').value;
+    const s = document.getElementById('field-sub').value;
+    navigator.clipboard.writeText([t, s].filter(Boolean).join('\n')).then(() =>
+      flashCopied(document.getElementById('btn-main'), 'העתק כותרת + משנה'));
+  }
+
+  function copyHomepage() {
+    const t = document.getElementById('field-hp-title').value;
+    const s = document.getElementById('field-hp-sub').value;
+    navigator.clipboard.writeText([t, s].filter(Boolean).join('\n')).then(() =>
+      flashCopied(document.getElementById('btn-hp'), 'העתק כותרת + משנה'));
+  }
+
+  // ----- clear functions -----
+  function clearField(taId, cntId, barId, max) {
+    const ta = document.getElementById(taId);
+    ta.value = ''; ta.style.height = 'auto'; ta.classList.remove('warn','danger','has-overflow');
+    const hl = document.getElementById('hl-' + taId);
+    if (hl) hl.innerHTML = '';
+    document.getElementById(cntId).textContent = `0/${max}`;
+    document.getElementById(cntId).style.color = '#4ecf8e';
+    document.getElementById(barId).style.width = '0%';
+    document.getElementById(barId).style.background = '#4ecf8e';
+  }
+
+  function clearGroup(taIds, cntIds, barIds, maxes) {
+    taIds.forEach((id, i) => clearField(id, cntIds[i], barIds[i], maxes[i]));
+  }
+
+
+  function copyVertical() {
+    const text = document.getElementById('field-vertical').innerText;
+    navigator.clipboard.writeText(text).then(() =>
+      flashCopied(document.getElementById('btn-vert'), 'העתק'));
+  }
+
+  function formatText(cmd) {
+    document.getElementById('field-vertical').focus();
+    document.execCommand(cmd, false, null);
+    updateToolbarState();
+  }
+
+  function updateToolbarState() {
+    document.getElementById('tb-bold').classList.toggle('active', document.queryCommandState('bold'));
+    document.getElementById('tb-underline').classList.toggle('active', document.queryCommandState('underline'));
+    document.getElementById('tb-strike').classList.toggle('active', document.queryCommandState('strikeThrough'));
+  }
+
+  document.addEventListener('selectionchange', updateToolbarState);
+
+
+  // ---- To Do List ----
+  let dragSrc = null;
+
+  function makeDraggable(item) {
+    item.draggable = true;
+
+    item.addEventListener('dragstart', e => {
+      dragSrc = item;
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+      document.querySelectorAll('.todo-item').forEach(i => i.classList.remove('drag-over'));
+    });
+
+    item.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (item !== dragSrc) {
+        document.querySelectorAll('.todo-item').forEach(i => i.classList.remove('drag-over'));
+        item.classList.add('drag-over');
+      }
+    });
+
+    item.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragSrc && dragSrc !== item) {
+        const parent = item.parentNode;
+        const items = [...parent.querySelectorAll('.todo-item')];
+        const srcIdx = items.indexOf(dragSrc);
+        const tgtIdx = items.indexOf(item);
+        if (srcIdx > tgtIdx) {
+          parent.insertBefore(dragSrc, item);
+        } else {
+          parent.insertBefore(dragSrc, item.nextSibling);
+        }
+      }
+      item.classList.remove('drag-over');
+    });
+  }
+
+  function addTodo(text = '', listId = 'todo-list-pending') {
+    const list = document.getElementById(listId);
+    const item = document.createElement('div');
+    item.className = 'todo-item';
+
+    const handle = document.createElement('span');
+    handle.className = 'drag-handle';
+    handle.innerHTML = '⠿';
+    handle.title = 'גרור';
+
+    const check = document.createElement('input');
+    check.type = 'checkbox';
+    check.className = 'todo-check';
+    check.addEventListener('change', () => {
+      input.classList.toggle('done', check.checked);
+      // Move to done/pending list on check
+      const targetId = check.checked ? 'todo-list-done' : 'todo-list-pending';
+      document.getElementById(targetId).appendChild(item);
+    });
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'todo-input';
+    input.placeholder = 'כתוב כאן...';
+    input.value = text;
+    if (listId === 'todo-list-done') {
+      check.checked = true;
+      input.classList.add('done');
+    }
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); addTodo(); }
+    });
+
+    const del = document.createElement('button');
+    del.className = 'todo-delete';
+    del.innerHTML = '×';
+    del.addEventListener('click', () => item.remove());
+
+    item.append(handle, check, input, del);
+    list.appendChild(item);
+    makeDraggable(item);
+    if (text === '') input.focus();
+  }
+
+  // Make lists droppable for empty drop zones
+  ['todo-list-pending', 'todo-list-done'].forEach(id => {
+    const list = document.getElementById(id);
+    list.addEventListener('dragover', e => {
+      e.preventDefault();
+    });
+    list.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragSrc && !list.contains(dragSrc)) {
+        list.appendChild(dragSrc);
+        // sync checkbox state
+        const check = dragSrc.querySelector('.todo-check');
+        const input = dragSrc.querySelector('.todo-input');
+        const isDone = id === 'todo-list-done';
+        check.checked = isDone;
+        input.classList.toggle('done', isDone);
+      }
+    });
+  });
+
+  // Start with 3 empty rows
+  addTodo(); addTodo(); addTodo();
+
+
+  // ---- AI Shorten ----
+  async function shortenField(fieldId, maxChars) {
+    const ta      = document.getElementById(fieldId);
+    const btn     = document.getElementById('shorten-' + fieldId);
+    const undoBtn = document.getElementById('undo-' + fieldId);
+    const origBox = document.getElementById('orig-' + fieldId);
+    const origTxt = document.getElementById('orig-text-' + fieldId);
+    const text    = ta.value.trim();
+
+    if (!text || text.length <= maxChars) return;
+
+    btn.disabled = true;
+    btn.classList.add('loading');
+    const origLabel = btn.textContent;
+    btn.textContent = '...';
+
+    try {
+      async function callAI(inputText, attempt) {
+        const strictNote = attempt > 1
+          ? `חשוב מאוד: הניסיון הקודם החזיר טקסט ארוך מדי. חובה שהתוצאה תהיה ${maxChars} תווים לכל היותר — ספור בעצמך לפני שאתה מחזיר.`
+          : '';
+        const response = await fetch('http://localhost:3131/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            messages: [{
+              role: 'user',
+              content: `קצר את הטקסט הבא כך שיהיה עד ${maxChars} תווים בדיוק (כולל רווחים). ${strictNote}
+שמור על הרעיון המרכזי, הטון והחדות.
+החזר רק את הטקסט המקוצר — ללא הסברים, ללא גרשיים, ללא טקסט נוסף.
+
+טקסט (${inputText.length} תווים): ${inputText}`
+            }]
+          })
+        });
+        const data = await response.json();
+        return data.content?.[0]?.text?.trim() || '';
+      }
+
+      let result = await callAI(text, 1);
+
+      // If still too long, retry up to 2 more times
+      let attempts = 1;
+      while (result.length > maxChars && attempts < 3) {
+        attempts++;
+        result = await callAI(result, attempts);
+      }
+
+      // Hard trim as last resort if AI still didn't comply
+      if (result.length > maxChars) {
+        // trim at last space before limit
+        result = result.slice(0, maxChars);
+        const lastSpace = result.lastIndexOf(' ');
+        if (lastSpace > maxChars * 0.7) result = result.slice(0, lastSpace);
+      }
+
+      if (result) {
+        ta.dataset.original = text;
+        ta.value = result;
+        ta.dispatchEvent(new Event('input'));
+        origTxt.textContent = text;
+        origBox.classList.add('visible');
+        undoBtn.classList.add('visible');
+      }
+    } catch (err) {
+      console.error('Shorten error:', err);
+    }
+
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = origLabel;
+  }
+
+  function undoShorten(fieldId) {
+    const ta      = document.getElementById(fieldId);
+    const undoBtn = document.getElementById('undo-' + fieldId);
+    const origBox = document.getElementById('orig-' + fieldId);
+    const origTxt = document.getElementById('orig-text-' + fieldId);
+    const original = ta.dataset.original;
+
+    if (original) {
+      ta.value = original;
+      ta.dispatchEvent(new Event('input'));
+      delete ta.dataset.original;
+    }
+
+    origBox.classList.remove('visible');
+    undoBtn.classList.remove('visible');
+    origTxt.textContent = '';
+  }
+
+
+  // ---- API Key Management ----
+  function updateKeyIndicator() {
+    const ind = document.getElementById('api-key-indicator');
+    ind.textContent = '🔌 מחובר לשרת proxy מקומי (3131)';
+    ind.style.color = '#4ecf8e';
+    ind.style.cursor = 'default';
+  }
+
+  function openApiModal(callback) {
+    window._apiModalCallback = callback || null;
+    const key = sessionStorage.getItem('anthropic_api_key') || '';
+    document.getElementById('api-key-input').value = key;
+    document.getElementById('api-modal-overlay').classList.add('visible');
+    setTimeout(() => document.getElementById('api-key-input').focus(), 100);
+  }
+
+  function closeApiModal() {
+    document.getElementById('api-modal-overlay').classList.remove('visible');
+    window._apiModalCallback = null;
+  }
+
+  function saveApiKey() {
+    const key = document.getElementById('api-key-input').value.trim();
+    if (!key) return;
+    sessionStorage.setItem('anthropic_api_key', key);
+    closeApiModal();
+    updateKeyIndicator();
+    if (window._apiModalCallback) window._apiModalCallback();
+  }
+
+  document.getElementById('api-key-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveApiKey();
+  });
+
+  updateKeyIndicator();
+
+</script>
+
+<!-- API Key Modal -->
+<div class="api-modal-overlay" id="api-modal-overlay">
+  <div class="api-modal">
+    <h2>🔑 מפתח API של Anthropic</h2>
+    <p>כדי שפיצ'ר "קצר" יעבוד בקובץ HTML עצמאי, יש להזין מפתח API של Anthropic.<br>המפתח נשמר רק בזיכרון הדפדפן ולא נשלח לשום מקום אחר.</p>
+    <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." />
+    <div class="api-modal-btns">
+      <button class="api-modal-cancel" onclick="closeApiModal()">ביטול</button>
+      <button class="api-modal-save" onclick="saveApiKey()">שמור והמשך</button>
+    </div>
+  </div>
+</div>
+<div class="api-key-indicator" id="api-key-indicator" onclick="openApiModal()" title="לחץ לעדכון מפתח API"></div>
+
+</body>
+</html>
