@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>N12 Helper</title>
+  <title>מגבלת התווים של N12 — גרסת overflow</title>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,7 +17,7 @@
     }
 
     h1 {
-      color: #c0001a;
+      color: #D50000;
       font-size: clamp(20px, 4vw, 28px);
       font-weight: 800;
       text-align: center;
@@ -25,7 +25,7 @@
     }
 
     .section-title {
-      color: #c0001a;
+      color: #D50000;
       font-size: 16px;
       font-weight: 800;
       text-align: center;
@@ -79,7 +79,7 @@
     }
 
     .toolbar-btn:hover { background: #f0f0f0; border-color: #bbb; }
-    .toolbar-btn.active { background: #c0001a; color: #fff; border-color: #c0001a; }
+    .toolbar-btn.active { background: #D50000; color: #fff; border-color: #D50000; }
 
     .vertical-editor {
       flex: 1;
@@ -139,7 +139,7 @@
     .vertical-box-header span {
       font-size: 13px;
       font-weight: 700;
-      color: #c0001a;
+      color: #D50000;
     }
 
     .vertical-textarea {
@@ -221,7 +221,7 @@
       transition: border-color 0.2s, background 0.15s;
     }
 
-    textarea:focus  { border-color: #c0001a; background: #fff; }
+    textarea:focus  { border-color: #D50000; background: #fff; }
     textarea.warn   { border-color: #f0a500 !important; }
     textarea.danger { border-color: #e00    !important; }
 
@@ -288,8 +288,8 @@
       transition: background 0.18s, transform 0.15s;
     }
 
-    .copy-btn { background: #c0001a; color: #fff; }
-    .copy-btn:hover  { background: #a00015; transform: translateY(-1px); }
+    .copy-btn { background: #D50000; color: #fff; }
+    .copy-btn:hover  { background: #B00000; transform: translateY(-1px); }
     .copy-btn.copied { background: #2a9c5f; }
 
     .clear-btn { background: #f2f2f2; color: #555; flex: 0 0 76px; }
@@ -333,7 +333,7 @@
     }
 
     .todo-header {
-      background: #c0001a;
+      background: #D50000;
       color: #fff;
       font-size: 15px;
       font-weight: 800;
@@ -366,7 +366,7 @@
 
     .todo-item.drag-over {
       background: #fff0f0;
-      outline: 1.5px dashed #c0001a;
+      outline: 1.5px dashed #D50000;
     }
 
     .drag-handle {
@@ -398,7 +398,7 @@
       font-size: 13px;
       font-weight: 800;
       color: #fff;
-      background: #c0001a;
+      background: #D50000;
       white-space: nowrap;
       padding: 4px 14px;
       border-radius: 20px;
@@ -408,7 +408,7 @@
       width: 18px;
       height: 18px;
       flex-shrink: 0;
-      accent-color: #c0001a;
+      accent-color: #D50000;
       cursor: pointer;
     }
 
@@ -426,7 +426,7 @@
       transition: border-color 0.2s;
     }
 
-    .todo-input:focus { border-color: #c0001a; }
+    .todo-input:focus { border-color: #D50000; }
 
     .todo-input.done {
       text-decoration: line-through;
@@ -449,7 +449,7 @@
       align-items: center;
       justify-content: center;
     }
-    .todo-delete:hover { color: #c0001a; }
+    .todo-delete:hover { color: #D50000; }
 
     .todo-footer {
       padding: 10px 12px;
@@ -469,7 +469,7 @@
       cursor: pointer;
       transition: all 0.15s;
     }
-    .todo-add-btn:hover { background: #fff0f0; border-color: #c0001a; color: #c0001a; }
+    .todo-add-btn:hover { background: #fff0f0; border-color: #D50000; color: #D50000; }
 
 
     /* ---- API Key Modal ---- */
@@ -496,7 +496,7 @@
     .api-modal h2 {
       margin: 0 0 8px;
       font-size: 18px;
-      color: #c0001a;
+      color: #D50000;
     }
     .api-modal p {
       margin: 0 0 16px;
@@ -516,10 +516,10 @@
       margin-bottom: 14px;
       outline: none;
     }
-    .api-modal input:focus { border-color: #c0001a; }
+    .api-modal input:focus { border-color: #D50000; }
     .api-modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
     .api-modal-save {
-      background: #c0001a;
+      background: #D50000;
       color: #fff;
       border: none;
       border-radius: 8px;
@@ -529,7 +529,7 @@
       font-weight: 700;
       cursor: pointer;
     }
-    .api-modal-save:hover { background: #a00015; }
+    .api-modal-save:hover { background: #B00000; }
     .api-modal-cancel {
       background: #f2f2f2;
       color: #555;
@@ -550,10 +550,10 @@
       cursor: pointer;
       z-index: 100;
     }
-    .api-key-indicator:hover { color: #c0001a; }
+    .api-key-indicator:hover { color: #D50000; }
 
 
-    /* ---- URL Preview Bar ---- */
+    /* ---- URL / Split View ---- */
     .url-bar-wrap {
       max-width: 1400px;
       margin: 20px auto 0;
@@ -581,12 +581,12 @@
       direction: ltr;
       transition: border-color 0.2s;
     }
-    .url-input:focus { border-color: #c0001a; background: #fff; }
+    .url-input:focus { border-color: #D50000; background: #fff; }
     .url-input::placeholder { color: #aaa; }
 
     .url-show-btn {
       padding: 10px 22px;
-      background: #c0001a;
+      background: #D50000;
       color: #fff;
       border: none;
       border-radius: 10px;
@@ -598,7 +598,7 @@
       white-space: nowrap;
       flex-shrink: 0;
     }
-    .url-show-btn:hover { background: #a00015; transform: translateY(-1px); }
+    .url-show-btn:hover { background: #B00000; transform: translateY(-1px); }
 
     .url-clear-btn {
       padding: 10px 14px;
@@ -615,28 +615,86 @@
     }
     .url-clear-btn:hover { background: #e0e0e0; }
 
-    .url-preview-frame {
-      width: 100%;
-      height: 600px;
+    .split-view {
+      display: none;
+      gap: 14px;
+      align-items: stretch;
+      height: 82vh;
+    }
+    .split-view.visible { display: flex; }
+
+    .split-iframe-wrap {
+      flex: 3;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
       border: 1.5px solid #ddd;
       border-radius: 12px;
-      background: #f9f9f9;
-      display: none;
+      overflow: hidden;
       box-shadow: 0 2px 10px rgba(0,0,0,0.07);
     }
-    .url-preview-frame.visible { display: block; }
 
-    .url-error {
-      display: none;
-      background: #fff0f0;
-      border: 1.5px solid #f5c0c0;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 13px;
-      color: #c0001a;
-      direction: rtl;
+    .split-iframe-bar {
+      background: #f7f7f7;
+      border-bottom: 1.5px solid #eee;
+      padding: 7px 12px;
+      font-size: 12px;
+      color: #888;
+      direction: ltr;
+      font-family: monospace;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .url-error.visible { display: block; }
+
+    .split-iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+
+    .split-panel {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    .split-panel .box {
+      flex-shrink: 0;
+    }
+
+    .split-blocked {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      background: #fff8f8;
+      border: 1.5px solid #f5c0c0;
+      border-radius: 12px;
+      flex: 1;
+      padding: 24px;
+      text-align: center;
+    }
+    .split-blocked.visible { display: flex; }
+    .split-blocked p { color: #D50000; font-size: 14px; font-weight: 700; }
+    .split-blocked small { color: #888; font-size: 12px; }
+    .split-open-btn {
+      padding: 9px 20px;
+      background: #D50000;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .split-open-btn:hover { background: #B00000; }
 
   </style>
   <link rel="icon" type="image/png" href="https://rcs.mako.co.il/images/favicon/N12/apple-touch-icon.png"/>
@@ -1056,20 +1114,87 @@
   updateKeyIndicator();
 
 
-  // ---- URL Preview ----
+  // ---- URL Split View ----
   function showUrl() {
     let val = document.getElementById('url-input').value.trim();
     if (!val) return;
     if (!/^https?:\/\//i.test(val)) val = 'https://' + val;
     document.getElementById('url-input').value = val;
-    window.open(val, '_blank');
+
+    const splitView   = document.getElementById('split-view');
+    const iframe      = document.getElementById('split-iframe');
+    const bar         = document.getElementById('split-iframe-bar');
+    const blocked     = document.getElementById('split-blocked');
+    const openExtBtn  = document.getElementById('split-open-ext');
+
+    // Reset state
+    blocked.classList.remove('visible');
+    iframe.style.display = 'block';
+    bar.textContent = val;
+    openExtBtn.onclick = () => window.open(val, '_blank');
+
+    // Load iframe
+    iframe.src = val;
+    splitView.classList.add('visible');
+
+    // Detect block after short delay (iframe won't throw JS error for X-Frame-Options)
+    iframe.onload = () => {
+      try {
+        // If we can access contentDocument, it loaded fine
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        if (!doc || !doc.body || doc.body.innerHTML === '') throw new Error('blocked');
+      } catch(e) {
+        // Blocked — show fallback
+        iframe.style.display = 'none';
+        blocked.classList.add('visible');
+      }
+    };
   }
 
   function clearUrl() {
     document.getElementById('url-input').value = '';
-    document.getElementById('url-frame').src = '';
-    document.getElementById('url-frame').classList.remove('visible');
-    document.getElementById('url-error').classList.remove('visible');
+    const iframe = document.getElementById('split-iframe');
+    iframe.src = '';
+    iframe.style.display = 'block';
+    document.getElementById('split-view').classList.remove('visible');
+    document.getElementById('split-blocked').classList.remove('visible');
+    document.getElementById('split-iframe-bar').textContent = '';
+  }
+
+  // Bind split panel fields
+  const SP_FIELDS = [
+    { taId: 'sp-field-title', cntId: 'sp-cnt-title', barId: 'sp-bar-title', max: 55  },
+    { taId: 'sp-field-sub',   cntId: 'sp-cnt-sub',   barId: 'sp-bar-sub',   max: 75  },
+    { taId: 'sp-field-push',  cntId: 'sp-cnt-push',  barId: 'sp-bar-push',  max: 100 },
+  ];
+  SP_FIELDS.forEach(f => {
+    const ta  = document.getElementById(f.taId);
+    const cnt = document.getElementById(f.cntId);
+    const bar = document.getElementById(f.barId);
+    const hl  = document.getElementById('sp-hl-' + f.taId.replace('sp-field-',''));
+    if (!ta) return;
+    ta.addEventListener('input', () => {
+      autoResize(ta);
+      const len = ta.value.length, pct = len / f.max * 100;
+      cnt.textContent = len + '/' + f.max;
+      let c = '#4ecf8e';
+      if (pct >= 100) c = '#e00'; else if (pct >= 80) c = '#f0a500';
+      bar.style.width = Math.min(pct,100) + '%';
+      bar.style.background = c;
+      cnt.style.color = c;
+      if (hl) updateHighlight(ta, hl, f.max);
+    });
+  });
+
+  function copySpMain() {
+    const t = document.getElementById('sp-field-title').value;
+    const s = document.getElementById('sp-field-sub').value;
+    navigator.clipboard.writeText([t,s].filter(Boolean).join('\n')).then(() =>
+      flashCopied(document.getElementById('sp-btn-main'), 'העתק כותרת + משנה'));
+  }
+  function copySpPush() {
+    navigator.clipboard.writeText(document.getElementById('sp-field-push').value).then(() =>
+      flashCopied(document.getElementById('sp-btn-push'), 'העתק'));
   }
 
 </script>
