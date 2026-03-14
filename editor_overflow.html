@@ -472,88 +472,6 @@
     .todo-add-btn:hover { background: #fff0f0; border-color: #D50000; color: #D50000; }
 
 
-    /* ---- API Key Modal ---- */
-    .api-modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    .api-modal-overlay.visible { display: flex; }
-    .api-modal {
-      background: #fff;
-      border-radius: 16px;
-      padding: 28px 32px;
-      width: 420px;
-      max-width: 90vw;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
-      direction: rtl;
-      font-family: 'Heebo', sans-serif;
-    }
-    .api-modal h2 {
-      margin: 0 0 8px;
-      font-size: 18px;
-      color: #D50000;
-    }
-    .api-modal p {
-      margin: 0 0 16px;
-      font-size: 13px;
-      color: #666;
-      line-height: 1.6;
-    }
-    .api-modal input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 10px 12px;
-      border: 1.5px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: monospace;
-      direction: ltr;
-      margin-bottom: 14px;
-      outline: none;
-    }
-    .api-modal input:focus { border-color: #D50000; }
-    .api-modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
-    .api-modal-save {
-      background: #D50000;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 9px 22px;
-      font-family: 'Heebo', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .api-modal-save:hover { background: #B00000; }
-    .api-modal-cancel {
-      background: #f2f2f2;
-      color: #555;
-      border: none;
-      border-radius: 8px;
-      padding: 9px 16px;
-      font-family: 'Heebo', sans-serif;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .api-key-indicator {
-      position: fixed;
-      bottom: 14px;
-      left: 14px;
-      font-size: 11px;
-      font-family: 'Heebo', sans-serif;
-      color: #aaa;
-      cursor: pointer;
-      z-index: 100;
-    }
-    .api-key-indicator:hover { color: #D50000; }
-
-
-
   </style>
   <link rel="icon" type="image/png" href="https://rcs.mako.co.il/images/favicon/N12/apple-touch-icon.png"/>
 </head>
@@ -928,59 +846,8 @@
   // Start with 3 empty rows
   addTodo(); addTodo(); addTodo();
 
-
-  // ---- API Key Management ----
-  function updateKeyIndicator() {
-    const ind = document.getElementById('api-key-indicator');
-    ind.textContent = '🔌 מחובר לשרת proxy מקומי (3131)';
-    ind.style.color = '#4ecf8e';
-    ind.style.cursor = 'default';
-  }
-
-  function openApiModal(callback) {
-    window._apiModalCallback = callback || null;
-    const key = sessionStorage.getItem('anthropic_api_key') || '';
-    document.getElementById('api-key-input').value = key;
-    document.getElementById('api-modal-overlay').classList.add('visible');
-    setTimeout(() => document.getElementById('api-key-input').focus(), 100);
-  }
-
-  function closeApiModal() {
-    document.getElementById('api-modal-overlay').classList.remove('visible');
-    window._apiModalCallback = null;
-  }
-
-  function saveApiKey() {
-    const key = document.getElementById('api-key-input').value.trim();
-    if (!key) return;
-    sessionStorage.setItem('anthropic_api_key', key);
-    closeApiModal();
-    updateKeyIndicator();
-    if (window._apiModalCallback) window._apiModalCallback();
-  }
-
-  document.getElementById('api-key-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') saveApiKey();
-  });
-
-  updateKeyIndicator();
-
-
 </script>
 
-<!-- API Key Modal -->
-<div class="api-modal-overlay" id="api-modal-overlay">
-  <div class="api-modal">
-    <h2>🔑 מפתח API של Anthropic</h2>
-    <p>כדי שפיצ'ר "קצר" יעבוד בקובץ HTML עצמאי, יש להזין מפתח API של Anthropic.<br>המפתח נשמר רק בזיכרון הדפדפן ולא נשלח לשום מקום אחר.</p>
-    <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." />
-    <div class="api-modal-btns">
-      <button class="api-modal-cancel" onclick="closeApiModal()">ביטול</button>
-      <button class="api-modal-save" onclick="saveApiKey()">שמור והמשך</button>
-    </div>
-  </div>
-</div>
-<div class="api-key-indicator" id="api-key-indicator" onclick="openApiModal()" title="לחץ לעדכון מפתח API"></div>
 
 </body>
 </html>
