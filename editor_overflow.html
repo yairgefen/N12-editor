@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<!-- saved from url=(0049)file:///Users/yairgefen/Downloads/N12_Helper.html -->
+<html lang="he" dir="rtl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>N12 Helper</title>
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="./respo_files/css2" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -240,8 +240,7 @@
     .col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
     .col .box { flex: 1; }
 
-    /* ---- To Do List ---- */
-    .todo-panel { flex: 0 0 220px; min-width: 0; display: flex; flex-direction: column; }
+
 
     .todo-box {
       background: #fff;
@@ -254,139 +253,51 @@
       height: 100%;
     }
 
-    .todo-header {
-      background: #D50000;
-      color: #fff;
-      font-size: 15px;
-      font-weight: 800;
-      padding: 12px 16px;
-      text-align: center;
-      flex-shrink: 0;
+
+
+    /* ---- Mobile Responsive ---- */
+    @media (max-width: 768px) {
+      body { padding: 16px 12px 40px; }
+
+      .outer {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .vertical-panel {
+        margin-top: 0;
+        min-height: 200px;
+      }
+
+      .tables-col { gap: 16px; }
+
+      .bottom-grid {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .col { width: 100%; }
+
+      .toolbar { flex-wrap: wrap; }
+
+      .copy-btn, .clear-btn {
+        font-size: 13px;
+        padding: 10px 6px;
+      }
+
+      .box { padding: 14px 12px; }
+
+      textarea { font-size: 15px; }
+
+      .field-name { font-size: 12px; }
     }
-
-    .todo-list {
-      overflow-y: auto;
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .todo-list-pending { max-height: 200px; }
-    .todo-list-done    { max-height: 140px; }
-
-    .todo-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: default;
-      border-radius: 6px;
-      transition: background 0.15s;
-    }
-
-    .todo-item.dragging { opacity: 0.4; }
-
-    .todo-item.drag-over {
-      background: #fff0f0;
-      outline: 1.5px dashed #D50000;
-    }
-
-    .drag-handle {
-      color: #ccc;
-      cursor: grab;
-      font-size: 14px;
-      flex-shrink: 0;
-      user-select: none;
-      padding: 0 2px;
-    }
-    .drag-handle:active { cursor: grabbing; }
-
-    .todo-divider {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 6px 0;
-      flex-shrink: 0;
-      padding: 0 12px;
-    }
-
-    .todo-divider-line { flex: 1; height: 1.5px; background: #e0e0e0; }
-
-    .todo-divider-label {
-      font-size: 13px;
-      font-weight: 800;
-      color: #fff;
-      background: #D50000;
-      white-space: nowrap;
-      padding: 4px 14px;
-      border-radius: 20px;
-    }
-
-    .todo-check {
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-      accent-color: #D50000;
-      cursor: pointer;
-    }
-
-    .todo-input {
-      flex: 1;
-      border: none;
-      outline: none;
-      font-family: 'Heebo', sans-serif;
-      font-size: 14px;
-      color: #1a1a1a;
-      direction: rtl;
-      background: transparent;
-      padding: 4px 0;
-      border-bottom: 1px solid #eee;
-      transition: border-color 0.2s;
-    }
-
-    .todo-input:focus { border-color: #D50000; }
-    .todo-input.done { text-decoration: line-through; color: #aaa; }
-
-    .todo-delete {
-      width: 20px;
-      height: 20px;
-      border: none;
-      background: none;
-      color: #ddd;
-      cursor: pointer;
-      font-size: 18px;
-      padding: 0;
-      line-height: 1;
-      flex-shrink: 0;
-      transition: color 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .todo-delete:hover { color: #D50000; }
-
-    .todo-footer { padding: 10px 12px; border-top: 1px solid #eee; flex-shrink: 0; }
-
-    .todo-add-btn {
-      width: 100%;
-      padding: 8px 0;
-      background: #f7f7f7;
-      border: 1.5px dashed #ddd;
-      border-radius: 8px;
-      font-family: 'Heebo', sans-serif;
-      font-size: 13px;
-      color: #888;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .todo-add-btn:hover { background: #fff0f0; border-color: #D50000; color: #D50000; }
 
   </style>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23D50000' viewBox='0 0 16 16'><path d='M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z'/><path fill-rule='evenodd' d='M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z'/></svg>"/>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,&lt;svg xmlns=&#39;http://www.w3.org/2000/svg&#39; width=&#39;16&#39; height=&#39;16&#39; fill=&#39;%23D50000&#39; viewBox=&#39;0 0 16 16&#39;&gt;&lt;path d=&#39;M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z&#39;/&gt;&lt;path fill-rule=&#39;evenodd&#39; d=&#39;M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z&#39;/&gt;&lt;/svg&gt;">
 </head>
 <body>
 
-<img src="data:image/png;base64,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" alt="N12" style="display:block;margin:0 auto 0;max-width:320px;width:100%;">
+<img src="./respo_files/N12_website_logo.svg" alt="N12" style="display:block;margin:0 auto;max-width:200px;width:100%;padding:8px 0;">
 
 <div style="border-bottom:3px solid #D50000;margin:12px 0 20px;"></div>
 
@@ -395,13 +306,13 @@
   <div class="vertical-panel">
     <div class="vertical-box">
       <div class="toolbar">
-        <button class="toolbar-btn" id="tb-bold" onclick="formatText('bold')" title="Bold"><b>B</b></button>
-        <button class="toolbar-btn" id="tb-underline" onclick="formatText('underline')" title="Underline"><u>U</u></button>
-        <button class="toolbar-btn" id="tb-strike" onclick="formatText('strikeThrough')" title="Strikethrough"><s>S</s></button>
+        <button class="toolbar-btn" id="tb-bold" onclick="formatText(&#39;bold&#39;)" title="Bold"><b>B</b></button>
+        <button class="toolbar-btn" id="tb-underline" onclick="formatText(&#39;underline&#39;)" title="Underline"><u>U</u></button>
+        <button class="toolbar-btn" id="tb-strike" onclick="formatText(&#39;strikeThrough&#39;)" title="Strikethrough"><s>S</s></button>
       </div>
       <div class="vertical-editor" id="field-vertical" contenteditable="true" data-placeholder="כתוב כאן..."></div>
       <div class="vertical-footer">
-        <button class="clear-btn" onclick="document.getElementById('field-vertical').innerHTML=''" style="flex:1;border-radius:6px;">מחק</button>
+        <button class="clear-btn" onclick="document.getElementById(&#39;field-vertical&#39;).innerHTML=&#39;&#39;" style="flex:1;border-radius:6px;">מחק</button>
       </div>
     </div>
   </div>
@@ -419,10 +330,10 @@
           <div class="ta-wrap"><div class="ta-highlight" id="hl-field-push"></div><textarea id="field-push" rows="3" placeholder="הקלד טקסט פוש..."></textarea></div>
           <div class="prog"><div class="prog-fill" id="bar-push"></div></div>
         </div>
-        <hr/>
+        <hr>
         <div class="actions">
           <button class="copy-btn" id="btn-push" onclick="copyPush()">העתק</button>
-          <button class="clear-btn" onclick="clearField('field-push','cnt-push','bar-push',100)">מחק</button>
+          <button class="clear-btn" onclick="clearField(&#39;field-push&#39;,&#39;cnt-push&#39;,&#39;bar-push&#39;,100)">מחק</button>
         </div>
       </div>
     </div>
@@ -448,10 +359,10 @@
             <div class="ta-wrap"><div class="ta-highlight" id="hl-field-sub"></div><textarea id="field-sub" rows="3" placeholder="הקלד משנה..."></textarea></div>
             <div class="prog"><div class="prog-fill" id="bar-sub"></div></div>
           </div>
-          <hr/>
+          <hr>
           <div class="actions">
             <button class="copy-btn" id="btn-main" onclick="copyMain()">העתק כותרת + משנה</button>
-            <button class="clear-btn" onclick="clearGroup(['field-title','field-sub'],['cnt-title','cnt-sub'],['bar-title','bar-sub'],[55,75])">מחק</button>
+            <button class="clear-btn" onclick="clearGroup([&#39;field-title&#39;,&#39;field-sub&#39;],[&#39;cnt-title&#39;,&#39;cnt-sub&#39;],[&#39;bar-title&#39;,&#39;bar-sub&#39;],[55,75])">מחק</button>
           </div>
         </div>
       </div>
@@ -475,10 +386,10 @@
             <div class="ta-wrap"><div class="ta-highlight" id="hl-field-hp-sub"></div><textarea id="field-hp-sub" rows="6" placeholder="הקלד משנה..."></textarea></div>
             <div class="prog"><div class="prog-fill" id="bar-hp-sub"></div></div>
           </div>
-          <hr/>
+          <hr>
           <div class="actions">
             <button class="copy-btn" id="btn-hp" onclick="copyHomepage()">העתק כותרת + משנה</button>
-            <button class="clear-btn" onclick="clearGroup(['field-hp-title','field-hp-sub'],['cnt-hp-title','cnt-hp-sub'],['bar-hp-title','bar-hp-sub'],[200,360])">מחק</button>
+            <button class="clear-btn" onclick="clearGroup([&#39;field-hp-title&#39;,&#39;field-hp-sub&#39;],[&#39;cnt-hp-title&#39;,&#39;cnt-hp-sub&#39;],[&#39;bar-hp-title&#39;,&#39;bar-hp-sub&#39;],[200,360])">מחק</button>
           </div>
         </div>
       </div>
@@ -502,10 +413,10 @@
             <div class="ta-wrap"><div class="ta-highlight" id="hl-field-mag-sub"></div><textarea id="field-mag-sub" rows="2" placeholder="הקלד משנה..."></textarea></div>
             <div class="prog"><div class="prog-fill" id="bar-mag-sub"></div></div>
           </div>
-          <hr/>
+          <hr>
           <div class="actions">
             <button class="copy-btn" id="btn-mag" onclick="copyMagazine()">העתק כותרת + משנה</button>
-            <button class="clear-btn" onclick="clearGroup(['field-mag-title','field-mag-sub'],['cnt-mag-title','cnt-mag-sub'],['bar-mag-title','bar-mag-sub'],[55,50])">מחק</button>
+            <button class="clear-btn" onclick="clearGroup([&#39;field-mag-title&#39;,&#39;field-mag-sub&#39;],[&#39;cnt-mag-title&#39;,&#39;cnt-mag-sub&#39;],[&#39;bar-mag-title&#39;,&#39;bar-mag-sub&#39;],[55,50])">מחק</button>
           </div>
         </div>
       </div>
@@ -514,21 +425,6 @@
 
   </div>
 
-  <div class="todo-panel" style="margin-top:34px; align-self: stretch;">
-    <div class="todo-box">
-      <div class="todo-header">To Do List</div>
-      <div class="todo-list todo-list-pending" id="todo-list-pending"></div>
-      <div class="todo-divider">
-        <div class="todo-divider-line"></div>
-        <span class="todo-divider-label">בוצע</span>
-        <div class="todo-divider-line"></div>
-      </div>
-      <div class="todo-list todo-list-done" id="todo-list-done"></div>
-      <div class="todo-footer">
-        <button class="todo-add-btn" onclick="addTodo()">+ הוסף שורה</button>
-      </div>
-    </div>
-  </div>
 
 </div>
 
@@ -657,100 +553,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.addEventListener('selectionchange', updateToolbarState);
 
-  // ---- To Do List ----
-  let dragSrc = null;
-
-  function makeDraggable(item) {
-    item.draggable = true;
-    item.addEventListener('dragstart', e => {
-      dragSrc = item;
-      item.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    item.addEventListener('dragend', () => {
-      item.classList.remove('dragging');
-      document.querySelectorAll('.todo-item').forEach(i => i.classList.remove('drag-over'));
-    });
-    item.addEventListener('dragover', e => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      if (item !== dragSrc) {
-        document.querySelectorAll('.todo-item').forEach(i => i.classList.remove('drag-over'));
-        item.classList.add('drag-over');
-      }
-    });
-    item.addEventListener('drop', e => {
-      e.preventDefault();
-      if (dragSrc && dragSrc !== item) {
-        const parent = item.parentNode;
-        const items = [...parent.querySelectorAll('.todo-item')];
-        const srcIdx = items.indexOf(dragSrc);
-        const tgtIdx = items.indexOf(item);
-        if (srcIdx > tgtIdx) parent.insertBefore(dragSrc, item);
-        else parent.insertBefore(dragSrc, item.nextSibling);
-      }
-      item.classList.remove('drag-over');
-    });
-  }
-
-  function addTodo(text = '', listId = 'todo-list-pending') {
-    const list = document.getElementById(listId);
-    const item = document.createElement('div');
-    item.className = 'todo-item';
-
-    const handle = document.createElement('span');
-    handle.className = 'drag-handle';
-    handle.innerHTML = '⠿';
-    handle.title = 'גרור';
-
-    const check = document.createElement('input');
-    check.type = 'checkbox';
-    check.className = 'todo-check';
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'todo-input';
-    input.placeholder = 'כתוב כאן...';
-    input.value = text;
-    if (listId === 'todo-list-done') { check.checked = true; input.classList.add('done'); }
-
-    check.addEventListener('change', () => {
-      input.classList.toggle('done', check.checked);
-      document.getElementById(check.checked ? 'todo-list-done' : 'todo-list-pending').appendChild(item);
-    });
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') { e.preventDefault(); addTodo(); }
-    });
-
-    const del = document.createElement('button');
-    del.className = 'todo-delete';
-    del.innerHTML = '×';
-    del.addEventListener('click', () => item.remove());
-
-    item.append(handle, check, input, del);
-    list.appendChild(item);
-    makeDraggable(item);
-    if (!text) input.focus();
-  }
-
-  ['todo-list-pending', 'todo-list-done'].forEach(id => {
-    const list = document.getElementById(id);
-    list.addEventListener('dragover', e => e.preventDefault());
-    list.addEventListener('drop', e => {
-      e.preventDefault();
-      if (dragSrc && !list.contains(dragSrc)) {
-        list.appendChild(dragSrc);
-        const check = dragSrc.querySelector('.todo-check');
-        const input = dragSrc.querySelector('.todo-input');
-        const isDone = id === 'todo-list-done';
-        check.checked = isDone;
-        input.classList.toggle('done', isDone);
-      }
-    });
-  });
-
-  addTodo(); addTodo(); addTodo();
-
   // expose globals needed by inline onclick
   window.copyPush = copyPush;
   window.copyMain = copyMain;
@@ -759,9 +561,9 @@ document.addEventListener('DOMContentLoaded', function() {
   window.clearField = clearField;
   window.clearGroup = clearGroup;
   window.formatText = formatText;
-  window.addTodo = addTodo;
 
 });
 </script>
-</body>
-</html>
+
+
+</body></html>
